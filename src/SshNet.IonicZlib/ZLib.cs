@@ -6,7 +6,7 @@
     /// <summary>
     /// Represents "zlib" compression implementation.
     /// </summary>
-    public class Zlib : Compressor
+    public sealed class Zlib : Compressor
     {
         private readonly string _name;
 
