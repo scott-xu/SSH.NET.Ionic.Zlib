@@ -6,14 +6,27 @@
     /// <summary>
     /// Represents "zlib" compression implementation.
     /// </summary>
-    public sealed class Zlib : Compressor
+    public class Zlib : Compressor
     {
-        private readonly string _name;
+        private readonly ZlibStream _compressor;
+        private readonly ZlibStream _decompressor;
+        private MemoryStream _compressorStream;
+        private MemoryStream _decompressorStream;
+        private bool _isDisposed;
 
-        public Zlib(bool delayedCompression)
+        public Zlib()
+            : this(delayedCompression: false)
+        {
+        }
+
+        protected Zlib(bool delayedCompression)
             : base(delayedCompression)
         {
-            _name = delayedCompression ? "zlib@openssh.com" : "zlib";
+            _compressorStream = new MemoryStream();
+            _decompressorStream = new MemoryStream();
+
+            _compressor = new ZlibStream(_compressorStream, CompressionMode.Compress);
+            _decompressor = new ZlibStream(_decompressorStream, CompressionMode.Decompress);
         }
 
         /// <summary>
@@ -21,27 +34,60 @@
         /// </summary>
         public override string Name
         {
-            get { return _name; }
+            get { return "zlib"; }
         }
 
         protected override byte[] CompressCore(byte[] data, int offset, int length)
         {
-            using var outputStream = new MemoryStream();
-            using var zlibStream = new ZlibStream(outputStream, CompressionMode.Compress);
+            _compressorStream.SetLength(0);
 
-            zlibStream.Write(data, offset, length);
+            _compressor.Write(data, offset, length);
+            _compressor.Flush();
 
-            return outputStream.ToArray();
+            return _compressorStream.ToArray();
         }
 
         protected override byte[] DecompressCore(byte[] data, int offset, int length)
         {
-            using var outputStream = new MemoryStream();
-            using var zlibStream = new ZlibStream(outputStream, CompressionMode.Decompress);
+            _decompressorStream.SetLength(0);
 
-            zlibStream.Write(data, offset, length);
+            _decompressor.Write(data, offset, length);
+            _decompressor.Flush();
 
-            return outputStream.ToArray();
+            return _decompressorStream.ToArray();
+        }
+
+        /// <summary>
+        /// Releases unmanaged and - optionally - managed resources.
+        /// </summary>
+        /// <param name="disposing"><see langword="true"/> to release both managed and unmanaged resources; <see langword="false"/> to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                var compressorStream = _compressorStream;
+                if (compressorStream != null)
+                {
+                    compressorStream.Dispose();
+                    _compressorStream = null;
+                }
+
+                var decompressorStream = _decompressorStream;
+                if (decompressorStream != null)
+                {
+                    decompressorStream.Dispose();
+                    _decompressorStream = null;
+                }
+
+                _isDisposed = true;
+            }
         }
     }
 }
