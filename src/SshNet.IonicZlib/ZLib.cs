@@ -25,8 +25,8 @@
             _compressorStream = new MemoryStream();
             _decompressorStream = new MemoryStream();
 
-            _compressor = new ZlibStream(_compressorStream, CompressionMode.Compress);
-            _decompressor = new ZlibStream(_decompressorStream, CompressionMode.Decompress);
+            _compressor = new ZlibStream(_compressorStream, CompressionMode.Compress) { FlushMode = FlushType.Partial };
+            _decompressor = new ZlibStream(_decompressorStream, CompressionMode.Decompress) { FlushMode = FlushType.Partial };
         }
 
         /// <summary>
@@ -40,20 +40,14 @@
         protected override byte[] CompressCore(byte[] data, int offset, int length)
         {
             _compressorStream.SetLength(0);
-
             _compressor.Write(data, offset, length);
-            _compressor.Flush();
-
             return _compressorStream.ToArray();
         }
 
         protected override byte[] DecompressCore(byte[] data, int offset, int length)
         {
             _decompressorStream.SetLength(0);
-
             _decompressor.Write(data, offset, length);
-            _decompressor.Flush();
-
             return _decompressorStream.ToArray();
         }
 
