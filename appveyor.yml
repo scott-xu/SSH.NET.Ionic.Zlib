@@ -1,6 +1,10 @@
-configuration: Release
 image: Visual Studio 2022
-before_build:
-  - dotnet restore --verbosity quiet
-build:
-  verbosity: minimal
+
+services:
+  - docker
+
+build_script:
+  - dotnet build
+
+test_script:
+  - dotnet test --no-build    
