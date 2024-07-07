@@ -4,7 +4,17 @@ services:
   - docker
 
 build_script:
-  - dotnet build --configuration Release
+  - dotnet pack --configuration Release
 
 test_script:
   - dotnet test --configuration Release --no-build --framework net462 --logger Appveyor
+
+artifacts:
+  - path: 'src\**\*nupkg'
+
+deploy:
+  provider: NuGet
+  api_key:
+    secure: xG61B5KVa9g0BUzJVxIX/6QgrV31iaM4XTS9sjL+ayo6gTFAcW/vV9z4rJhXCOje
+  on:
+    appveyor_repo_tag: true
