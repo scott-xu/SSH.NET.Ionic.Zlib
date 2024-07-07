@@ -18,4 +18,4 @@ deploy:
   api_key:
     secure: xG61B5KVa9g0BUzJVxIX/6QgrV31iaM4XTS9sjL+ayo6gTFAcW/vV9z4rJhXCOje
   on:
-    appveyor_repo_tag: true
+    branch: /^release\/v\d+(?:\.\d+){2}$/
