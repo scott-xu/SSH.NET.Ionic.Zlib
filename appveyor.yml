@@ -4,7 +4,7 @@ services:
   - docker
 
 build_script:
-  - dotnet buid --configuration Release
+  - dotnet build --configuration Release
   - dotnet pack --configuration Release --no-build
 
 test_script:
