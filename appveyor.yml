@@ -7,4 +7,4 @@ build_script:
   - dotnet build --configuration Release
 
 test_script:
-  - dotnet test --configuration Release --no-build --framework net8.0 --logger Appveyor
+  - dotnet test --configuration Release --no-build --framework net462 --logger Appveyor
