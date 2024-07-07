@@ -4,7 +4,7 @@ services:
   - docker
 
 build_script:
-  - dotnet build
+  - dotnet build --configuration Release
 
 test_script:
-  - dotnet test --no-build    
+  - dotnet test --configuration Release --no-build --framework net8.0 --logger Appveyor
