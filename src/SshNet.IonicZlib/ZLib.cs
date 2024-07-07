@@ -4,7 +4,7 @@
     using Ionic.Zlib;
 
     /// <summary>
-    /// Represents "zlib" compression implementation.
+    /// Represents the "zlib" compression algorithm.
     /// </summary>
     public class Zlib : Compressor
     {
@@ -14,11 +14,20 @@
         private MemoryStream _decompressorStream;
         private bool _isDisposed;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Zlib"/> class.
+        /// </summary>
         public Zlib()
             : this(delayedCompression: false)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Zlib"/> class.
+        /// </summary>
+        /// <param name="delayedCompression">
+        /// <inheritdoc cref="Compressor(bool)" path="/param[@name='delayedCompression']"/>
+        /// </param>
         protected Zlib(bool delayedCompression)
             : base(delayedCompression)
         {
@@ -29,14 +38,13 @@
             _decompressor = new ZlibStream(_decompressorStream, CompressionMode.Decompress) { FlushMode = FlushType.Partial };
         }
 
-        /// <summary>
-        /// Gets algorithm name.
-        /// </summary>
+        /// <inheritdoc/>
         public override string Name
         {
             get { return "zlib"; }
         }
 
+        /// <inheritdoc/>
         protected override byte[] CompressCore(byte[] data, int offset, int length)
         {
             _compressorStream.SetLength(0);
@@ -44,6 +52,7 @@
             return _compressorStream.ToArray();
         }
 
+        /// <inheritdoc/>
         protected override byte[] DecompressCore(byte[] data, int offset, int length)
         {
             _decompressorStream.SetLength(0);
